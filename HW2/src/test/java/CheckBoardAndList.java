@@ -6,29 +6,28 @@ import service.RestBoardAssertions;
 import service.RestBoardService;
 import service.RestListAssertions;
 import service.RestListService;
+import service.ServiceBase;
 
-public class CheckCreatedBoard {
+public class CheckBoardAndList {
 
     @BeforeMethod
     void beforeMethod() {
+        new ServiceBase();
 
-        BoardDto[] allBoards = new RestBoardService()
-            .getAllBoard();
-
+        BoardDto[] allBoards = RestBoardService.getInstance().getAllBoard();
         if (allBoards.length != 0) {
             for (BoardDto i : allBoards) {
-                new RestBoardService()
-                    .deleteBoardById(i.getId());
+                RestBoardService.getInstance()
+                                .deleteBoardById(i.getId());
             }
         }
     }
 
     @Test
     void getBoardByIdTest() {
-
         String createdBoardName = "board for GetTest";
 
-        BoardDto createdBoard = new RestBoardService()
+        BoardDto createdBoard = RestBoardService.getInstance()
             .createBoard(createdBoardName);
 
         new RestBoardAssertions(createdBoard)
@@ -39,10 +38,10 @@ public class CheckCreatedBoard {
     void deleteBoardByIdTest() {
         String createdBoardName = "board for deleteTest";
 
-        BoardDto createdBoard = new RestBoardService()
+        BoardDto createdBoard = RestBoardService.getInstance()
             .createBoard(createdBoardName);
 
-        new RestBoardService()
+        RestBoardService.getInstance()
             .deleteBoardById(createdBoard.getId());
 
         new RestBoardAssertions(createdBoard)
@@ -55,13 +54,13 @@ public class CheckCreatedBoard {
         String createdBoardName = "board for getListInDeletedBoardTest";
         String createdListName = "list for getListInDeletedBoardTest";
 
-        BoardDto createdBoard = new RestBoardService()
+        BoardDto createdBoard = RestBoardService.getInstance()
             .createBoard(createdBoardName);
 
-        ListDto createdList = new RestListService()
+        ListDto createdList = RestListService.getInstance()
             .createList(createdBoard.getId(), createdListName);
 
-        new RestBoardService()
+        RestBoardService.getInstance()
             .deleteBoardById(createdBoard.getId());
 
         new RestListAssertions(createdList)
@@ -74,14 +73,14 @@ public class CheckCreatedBoard {
         String createdBoardNameTo = "board (to) for getMovedListTest";
         String createdListName = "list for getMovedListTest";
 
-        BoardDto createdBoardFrom = new RestBoardService()
+        BoardDto createdBoardFrom = RestBoardService.getInstance()
             .createBoard(createdBoardNameFrom);
-        BoardDto createdBoardTo = new RestBoardService()
+        BoardDto createdBoardTo = RestBoardService.getInstance()
             .createBoard(createdBoardNameTo);
-        ListDto createdList = new RestListService()
+        ListDto createdList = RestListService.getInstance()
             .createList(createdBoardFrom.getId(), createdListName);
 
-        new RestListService()
+        RestListService.getInstance()
             .moveListToAnotherBoard(createdList.getId(), createdBoardTo.getId());
 
         new RestListAssertions(createdList)
@@ -94,13 +93,13 @@ public class CheckCreatedBoard {
         String oldListName = "list for updateListNameTest";
         String newListName = "new list name for updateListNameTest";
 
-        BoardDto createdBoard = new RestBoardService()
+        BoardDto createdBoard = RestBoardService.getInstance()
             .createBoard(createdBoardName);
 
-        ListDto createdList = new RestListService()
+        ListDto createdList = RestListService.getInstance()
             .createList(createdBoard.getId(), oldListName);
 
-        new RestListService()
+        RestListService.getInstance()
             .updateListName(createdList.getId(), newListName);
 
         new RestListAssertions(createdList)

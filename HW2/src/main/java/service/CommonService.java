@@ -8,86 +8,58 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import java.util.Properties;
-import lombok.SneakyThrows;
+import java.util.Map;
 
-public class CommonService {
+public class CommonService extends ServiceBase{
 
-    private RequestSpecification REQUEST_SPECIFICATION;
-
-    @SneakyThrows
-    private Properties getProperties() {
-        Properties props = new Properties();
-        String propFileName = "test.properties";
-        props.load(getClass().getClassLoader().getResourceAsStream(propFileName));
-        return props;
-    }
+    private RequestSpecification request_specification;
 
     public CommonService() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        REQUEST_SPECIFICATION = new RequestSpecBuilder()
+        request_specification = new RequestSpecBuilder()
             .setBaseUri("https://api.trello.com/")
             .addFilter(new RequestLoggingFilter())
             .addFilter(new ResponseLoggingFilter())
             .build()
-            .queryParam("key", getProperties().get("key").toString())
-            .queryParam("token", getProperties().get("token").toString());
+            .queryParam("key", property.get("key"))
+            .queryParam("token", property.get("token"));
 
     }
 
     public Response getNoParams(String uri) {
-        return given(REQUEST_SPECIFICATION)
+        return given(request_specification)
             .get(uri);
     }
 
-    public Response postCreateBoard(String uri, String boardName) {
-        return given(REQUEST_SPECIFICATION)
-            .queryParam("name", boardName)
+    public Response postWithParams(String uri, Map<String, Object> params) {
+        RequestSpecification specification = given(request_specification);
+
+        for (Map.Entry<String, Object> param : params.entrySet())
+            specification.queryParam(param.getKey(), param.getValue());
+
+        return specification
             .body("")
             .post(uri)
             .then()
             .extract().response();
     }
 
-    public Response deleteBoard(String uri, String boardId) {
-        return given(REQUEST_SPECIFICATION)
-            .queryParam("id", boardId)
-            .body("")
+    public Response deleteNoParams(String uri) {
+        return given(request_specification)
             .delete(uri)
             .then()
             .extract().response();
     }
 
-    public Response postCreateList(String uri, String boardId, String listName) {
-        return given(REQUEST_SPECIFICATION)
-            .queryParam("idBoard", boardId)
-            .queryParam("name", listName)
-            .body("")
-            .post(uri)
-            .then()
-            .extract().response();
-    }
+    public Response putWithParams(String uri, Map<String, Object> params) {
+        RequestSpecification specification = given(request_specification);
 
-    public Response putListToAnotherBoard(String uri, String boardIdTo) {
-        return given(REQUEST_SPECIFICATION)
-            .queryParam("value", boardIdTo)
-            .body("")
+        for (Map.Entry<String, Object> param : params.entrySet())
+            specification.queryParam(param.getKey(), param.getValue());
+
+        return specification
             .put(uri)
             .then()
             .extract().response();
-    }
-
-    public Response putNewListName(String uri, String newListName) {
-        return given(REQUEST_SPECIFICATION)
-            .queryParam("name", newListName)
-            .body("")
-            .put(uri)
-            .then()
-            .extract().response();
-    }
-
-    public Response getAllBoards(String uri) {
-        return given(REQUEST_SPECIFICATION)
-            .get(uri);
     }
 }

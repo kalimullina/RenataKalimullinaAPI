@@ -17,8 +17,8 @@ public class RestBoardAssertions {
 
     public void verifyBoardById() {
 
-        Response response = new CommonService()
-            .getNoParams(String.format(URI.GET_BY_BOARD_ID_URI, boardDto.getId()));
+        Response response = RestBoardService.getInstance()
+            .getBoardByIdResponse(boardDto.getId());
 
         assertThat(response.getStatusCode())
             .as("Wrong status code in verifyBoardById method")
@@ -27,8 +27,8 @@ public class RestBoardAssertions {
 
     public RestBoardAssertions verifyDeletedBoard() {
 
-        Response response = new CommonService()
-            .getNoParams(String.format(URI.GET_BY_BOARD_ID_URI, boardDto.getId()));
+        Response response = RestBoardService.getInstance()
+            .getBoardByIdResponse( boardDto.getId());
 
         assertThat(response.getStatusCode())
             .as("Wrong status code in verifyDeletedBoard method")
@@ -39,7 +39,7 @@ public class RestBoardAssertions {
 
     public RestBoardAssertions verifyDeleteNonExistentBoard() {
 
-        String errorMessage = new RestBoardService()
+        String errorMessage = RestBoardService.getInstance()
             .deleteBoardById(boardDto.getId());
 
         assertThat(errorMessage)
@@ -48,7 +48,4 @@ public class RestBoardAssertions {
 
         return this;
     }
-
-
-
 }

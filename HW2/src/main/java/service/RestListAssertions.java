@@ -16,8 +16,8 @@ public class RestListAssertions {
 
     public void verifyDeletedListById() {
 
-        Response response = new CommonService()
-            .getNoParams(String.format(URI.GET_BY_LIST_ID_URI, listDto.getId()));
+        Response response = RestListService.getInstance()
+            .getListByIdResponse( listDto.getId());
 
         assertThat(response.getStatusCode())
             .as("Wrong status code in verifyDeletedListById method")
@@ -30,7 +30,7 @@ public class RestListAssertions {
 
     public RestListAssertions verifyListInBoardTo(String boardToId) {
 
-        ListDto getRequestListDto = new RestListService()
+        ListDto getRequestListDto = RestListService.getInstance()
             .getListById(listDto.getId());
 
         assertThat(getRequestListDto.getIdBoard())
@@ -42,7 +42,7 @@ public class RestListAssertions {
 
     public RestListAssertions verifyNewListNameById(String newListName, String oldListName) {
 
-        ListDto getRequestListDto = new RestListService()
+        ListDto getRequestListDto = RestListService.getInstance()
             .getListById(listDto.getId());
 
         assertThat(getRequestListDto.getName())
@@ -55,5 +55,4 @@ public class RestListAssertions {
 
         return this;
     }
-
 }
