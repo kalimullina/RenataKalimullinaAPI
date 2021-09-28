@@ -6,14 +6,11 @@ import service.RestBoardAssertions;
 import service.RestBoardService;
 import service.RestListAssertions;
 import service.RestListService;
-import service.ServiceBase;
 
 public class CheckBoardAndList {
 
     @BeforeMethod
     void beforeMethod() {
-        new ServiceBase();
-
         BoardDto[] allBoards = RestBoardService.getInstance().getAllBoard();
         if (allBoards.length != 0) {
             for (BoardDto i : allBoards) {

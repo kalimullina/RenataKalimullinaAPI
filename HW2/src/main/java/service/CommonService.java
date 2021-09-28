@@ -9,30 +9,30 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import java.util.Map;
+import utils.PropertyReader;
 
-public class CommonService extends ServiceBase{
+public class CommonService {
 
-    private RequestSpecification request_specification;
+    private RequestSpecification requestSpecification;
 
     public CommonService() {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        request_specification = new RequestSpecBuilder()
-            .setBaseUri("https://api.trello.com/")
+        PropertyReader property = new PropertyReader();        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        requestSpecification = new RequestSpecBuilder()
+            .setBaseUri(property.getDomain())
             .addFilter(new RequestLoggingFilter())
             .addFilter(new ResponseLoggingFilter())
             .build()
-            .queryParam("key", property.get("key"))
-            .queryParam("token", property.get("token"));
-
+            .queryParam("key", property.getKey())
+            .queryParam("token", property.getToken());
     }
 
     public Response getNoParams(String uri) {
-        return given(request_specification)
+        return given(requestSpecification)
             .get(uri);
     }
 
     public Response postWithParams(String uri, Map<String, Object> params) {
-        RequestSpecification specification = given(request_specification);
+        RequestSpecification specification = given(requestSpecification);
 
         for (Map.Entry<String, Object> param : params.entrySet())
             specification.queryParam(param.getKey(), param.getValue());
@@ -45,14 +45,14 @@ public class CommonService extends ServiceBase{
     }
 
     public Response deleteNoParams(String uri) {
-        return given(request_specification)
+        return given(requestSpecification)
             .delete(uri)
             .then()
             .extract().response();
     }
 
     public Response putWithParams(String uri, Map<String, Object> params) {
-        RequestSpecification specification = given(request_specification);
+        RequestSpecification specification = given(requestSpecification);
 
         for (Map.Entry<String, Object> param : params.entrySet())
             specification.queryParam(param.getKey(), param.getValue());
